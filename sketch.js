@@ -178,7 +178,7 @@ function drawMinute(min, sec) {
     // update minTrail
     if (min != prevMin) {
         prevMin = min;
-        console.log(min)
+        console.log("minute: ",min)
     }
 }
 

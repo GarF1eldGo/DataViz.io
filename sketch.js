@@ -5,12 +5,7 @@ let prevMin = -1;
 let secTrail = [];
 let backgroundColor = 60;
 
-// for debug
-let sec = 57;
-
 // TODO: opimize color
-// TODO: add motion effect when second run a round
-// TODO: add motion effect when minute changes
 // TODO: add stars background
 
 // setup() is called once at page-load
@@ -29,21 +24,17 @@ function windowResized() {
 function draw() {
     let hr = hour();
     let min = minute();
-    // let sec = second();
-    if (cnt == 59) {
-        sec += 1;
-    }
-    sec = sec % 60;
+    let sec = second();
 
     // for debug
     background(backgroundColor);
-    textSize(32);
-    fill(180);
-    text(hr, 10, 30);
-    fill(100);
-    text(min, 10, 60);
-    fill(0);
-    text(sec, 10, 90);
+    // textSize(32);
+    // fill(180);
+    // text(hr, 10, 30);
+    // fill(100);
+    // text(min, 10, 60);
+    // fill(0);
+    // text(sec, 10, 90);
 
     // draw seconds 
     gradientSecColor = lerpColor(color("#ebf0f7"), color("#222D83"), sec/60);
@@ -51,8 +42,8 @@ function draw() {
     drawMeteor(sec, gradientSecColor);
 
     // draw minute
-    drawMinueTrail(min);
-    drawMinute(min);
+    drawMinueTrail(min, sec);
+    drawMinute(min, sec);
 
     // draw hour
     drawHourTrail(hr);
@@ -61,11 +52,11 @@ function draw() {
 
 function drawSecondsTrail(sec, particleColor) {
     // draw seconds trail
-    if (sec == 0) {
-        particleColor = lerpColor(particleColor, color("#ebf0f7"), (60+cnt)/120);
+    if (sec == 0 && cnt < 15) {
+        particleColor = lerpColor(color("#222D83"), color("#ebf0f7"), (60+cnt)/75);
     }
     if (sec == 59 ) {
-        particleColor = lerpColor(particleColor, color("#ebf0f7"), cnt/120);
+        particleColor = lerpColor(color("#222D83"), color("#ebf0f7"), cnt/75);
     }
 
     n = secTrail.length;
@@ -98,32 +89,53 @@ function drawMeteor(sec, secColor) {
 
     // draw halo
     if (sec == 59) { // halo expand
-        noFill();
-        n = min(cnt, 25)
-        let originR = 15
-        for (let i=0; i<n; i++){
-            let alpha = map(i, 0, n, 225, 0)
-            let haloColor = lerpColor(color(backgroundColor), color(250, 250, 210, alpha), (n-i)/n)
-            originR += (n-i)/n * 3
-            strokeWeight((n-i)/n * 3)
-            stroke(haloColor);
-            ellipse(x, y, originR, originR);
+        if (cnt > 0){
+            tinyR = 15 + min(cnt, 20) * 0.5;
+            noStroke();
+            fill(250, 250, 103, 150);
+            ellipse(x, y, tinyR, tinyR);
+        }  
+        if (cnt > 20) {
+            midR = 25 + (min(cnt, 40) - 20 ) * 0.5;
+            noStroke();
+            fill(250, 250, 176, 100);
+            ellipse(x, y, midR, midR);
         }
-        strokeWeight(1)// reset strokeWeight
+        if (cnt > 40) {
+            largeR = 45 + (min(cnt, 60) - 40 ) * 0.5;
+            noStroke();
+            fill(250, 250, 210, 50);
+            ellipse(x, y, largeR, largeR);
+        }
     }
 
     if (sec == 0){// halo shrink
-        noFill();
-        
+        if (cnt < 20) {
+            largeR = 45 + 10 - cnt * 0.5;
+            noStroke();
+            fill(250, 250, 103, 50);
+            ellipse(x, y, largeR, largeR);
+        }
+        if (cnt < 40) {
+            midR = 25 + 20 - max(cnt, 20) * 0.5;
+            noStroke();
+            fill(250, 250, 176, 100);
+            ellipse(x, y, midR, midR);
+        }
+        if (cnt < 60) {
+            tinyR = 15 + 30 - max(cnt, 40) * 0.5;
+            noStroke();
+            fill(250, 250, 210, 150);
+            ellipse(x, y, tinyR, tinyR);
+        }
     }
 
-
-    // adjust color when sec == 59
+    // adjust color gradually 
     if (sec == 59) {
-        secColor = lerpColor(secColor, color("#ebf0f7"), cnt/120);
+        secColor = lerpColor(color("#222D83"), color("#ebf0f7"), cnt/75);
     }
-    if (sec == 0) {
-        secColor = lerpColor(secColor, color("#ebf0f7"), (60+cnt)/120);
+    if (sec == 0 && cnt < 15) {
+        secColor = lerpColor(color("#222D83"), color("#ebf0f7"), (60+cnt)/75);
     }
 
     // draw meteor
@@ -139,8 +151,8 @@ function drawMeteor(sec, secColor) {
     }
 }
 
-function drawMinueTrail(min) {
-    targetAngle = map(min, 0, 60, 0, TWO_PI) - HALF_PI;
+function drawMinueTrail(min, sec) {
+    targetAngle = map(min*60+sec, 0, 3600, 0, TWO_PI) - HALF_PI;
     for (let i = -HALF_PI; i < targetAngle; i += 0.01){
         minColor = lerpColor(color("#ebf0f7"), color("#222D83"), (i + HALF_PI)/TWO_PI);
         let r = 130;
@@ -152,10 +164,10 @@ function drawMinueTrail(min) {
     }
 }
 
-function drawMinute(min) {
+function drawMinute(min, sec) {
     // draw minute
     let r = 130;
-    let angle = map(min, 0, 60, 0, TWO_PI) - HALF_PI;
+    let angle = map(min*60+sec, 0, 3600, 0, TWO_PI) - HALF_PI;
     let x = windowWidth / 2  + r * cos(angle);
     let y = windowHeight / 2  + r * sin(angle);
     minColor = lerpColor(color("#ebf0f7"), color("#222D83"), min/60);

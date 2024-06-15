@@ -4,19 +4,19 @@ let prevSec = -1;
 let prevMin = -1;
 let secTrail = [];
 let backgroundColor = 60;
+let bodyWidth = window.innerWidth;
+let bodyHeight = window.innerHeight;
 
-// TODO: opimize color
-// TODO: add stars background
 
 // setup() is called once at page-load
 function setup() {
-    let canvas = createCanvas(windowWidth, windowHeight); // make an HTML canvas element width x height pixels
+    let canvas = createCanvas(bodyWidth, bodyHeight); // make an HTML canvas element width x height pixels
     canvas.style('display', 'block')
 }
 
 // resize canvas when the browser window resizes
 function windowResized() {
-    resizeCanvas(windowWidth, windowHeight)
+    resizeCanvas(bodyWidth, bodyHeight)
     background(225)
 }
 
@@ -26,15 +26,8 @@ function draw() {
     let min = minute();
     let sec = second();
 
-    // for debug
+    // set background color
     background(backgroundColor);
-    // textSize(32);
-    // fill(180);
-    // text(hr, 10, 30);
-    // fill(100);
-    // text(min, 10, 60);
-    // fill(0);
-    // text(sec, 10, 90);
 
     // draw seconds 
     gradientSecColor = lerpColor(color("#ebf0f7"), color("#222D83"), sec/60);
@@ -84,8 +77,8 @@ function drawMeteor(sec, secColor) {
     }
 
     let r = 200;
-    x = windowWidth / 2  + r * cos(angle);
-    y = windowHeight / 2  + r * sin(angle);
+    x = bodyWidth / 2  + r * cos(angle);
+    y = bodyHeight / 2  + r * sin(angle);
 
     // draw halo
     if (sec == 59) { // halo expand
@@ -156,8 +149,8 @@ function drawMinueTrail(min, sec) {
     for (let i = -HALF_PI; i < targetAngle; i += 0.01){
         minColor = lerpColor(color("#ebf0f7"), color("#222D83"), (i + HALF_PI)/TWO_PI);
         let r = 130;
-        let x = windowWidth / 2  + r * cos(i);
-        let y = windowHeight / 2  + r * sin(i);
+        let x = bodyWidth / 2  + r * cos(i);
+        let y = bodyHeight / 2  + r * sin(i);
         stroke(minColor);
         fill(minColor);
         ellipse(x,y, 20, 20);
@@ -168,8 +161,8 @@ function drawMinute(min, sec) {
     // draw minute
     let r = 130;
     let angle = map(min*60+sec, 0, 3600, 0, TWO_PI) - HALF_PI;
-    let x = windowWidth / 2  + r * cos(angle);
-    let y = windowHeight / 2  + r * sin(angle);
+    let x = bodyWidth / 2  + r * cos(angle);
+    let y = bodyHeight / 2  + r * sin(angle);
     minColor = lerpColor(color("#ebf0f7"), color("#222D83"), min/60);
     stroke(minColor);
     fill(minColor);
@@ -189,8 +182,8 @@ function drawHourTrail(hr) {
     let angle = map(hr12, 0, 12, 0, TWO_PI) - HALF_PI;
     for (let i = -HALF_PI; i < angle; i += 0.01){
         hourColor = lerpColor(color("#ebf0f7"), color("#222D83"), (i + HALF_PI)/TWO_PI);
-        let x = windowWidth / 2  + r * cos(i);
-        let y = windowHeight / 2  + r * sin(i);
+        let x = bodyWidth / 2  + r * cos(i);
+        let y = bodyHeight / 2  + r * sin(i);
         stroke(hourColor);
         fill(hourColor);
         ellipse(x, y, 40, 40);
@@ -202,8 +195,8 @@ function drawHour(hr){
     let r = 80;
     hr12 = hr % 12
     let angle = map(hr12, 0, 12, 0, TWO_PI) - HALF_PI;
-    let x = windowWidth / 2  + r * cos(angle);
-    let y = windowHeight / 2  + r * sin(angle);
+    let x = bodyWidth / 2  + r * cos(angle);
+    let y = bodyHeight / 2  + r * sin(angle);
     hourColor = lerpColor(color("#ebf0f7"), color("#222D83"), hr12/12);
     stroke(hourColor);
     fill(hourColor);
@@ -214,7 +207,7 @@ class Particle {
     constructor(r, angle) {
         this.r = r;
         this.angle = angle;
-        this.x = windowWidth / 2  + r * cos(angle);
-        this.y = windowHeight / 2  + r * sin(angle);
+        this.x = bodyWidth / 2  + r * cos(angle);
+        this.y = bodyHeight / 2  + r * sin(angle);
     }
 }
